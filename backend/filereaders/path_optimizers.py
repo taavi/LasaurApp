@@ -20,28 +20,47 @@ import logging
 
 log = logging.getLogger("svg_reader")
 
+import kdtree
 
-def join_segments(paths, epsilon2):
+
+def connect_segments(paths, epsilon2):
     """
-    Join paths with congruent end/start points.
+    Optimizes continuity of paths.
 
-    This is Useful to optimize pseudo-polylines made from line segments.
+    This function joins path segments if either the next start point
+    or end point is congruent with the current end point. In case of
+    an end point join it reverse the path segment.
     """
     join_count = 0
-    nPaths = []
-    for path in paths:
-		if nPaths:
-			lastpath = nPaths[-1:][0]
-			endpoint = lastpath[-1:][0]
-			d2 = (endpoint[0]-path[0][0])**2 + (endpoint[1]-path[0][1])**2
-			if d2 < epsilon2:
-				lastpath.extend(path[1:])
-				join_count += 1
-			else:
-				nPaths.append(path)
-		else:
-			nPaths.append(path)
-    # report pseudo-polyline joining operations
+    reverse_count = 0
+    nPaths = [paths[0]]  # prime with first path
+    for i in xrange(1,len(paths)):
+        path = paths[i]
+        lastpath = nPaths[-1]
+        point = lastpath[-1]
+        startpoint = path[0]
+        endpoint = path[-1]
+
+        d2_start = (point[0]-startpoint[0])**2 + (point[1]-startpoint[1])**2
+        if d2_start < epsilon2:
+            lastpath.extend(path[1:])
+            join_count += 1
+            continue
+
+        d2_end = (point[0]-endpoint[0])**2 + (point[1]-endpoint[1])**2
+        if d2_end < epsilon2:
+            path.reverse()
+            lastpath.extend(path[1:])
+            join_count += 1
+            reverse_count += 1
+            continue
+        
+        nPaths.append(path)
+
+    # report if excessive reverts
+    if reverse_count > 100:
+        log.info("reverted many paths: " + str(reverse_count))
+    # report if excessive joins
     if join_count > 100:
         log.info("joined many line segments: " + str(join_count))
 
@@ -169,28 +188,93 @@ def simplify_all(paths, tolerance2):
 
 
 
+# def sort_by_seektime_old(paths, start=[0.0, 0.0]):
+#     # sort paths to optimize seek distances in between
+#     endpoint = start
+#     for i in xrange(len(paths)):
+#         if i > 0:
+#             endpoint = paths[i-1][len(paths[i-1])-1]
+#         # search the rest of array for closest path start point
+#         d2_hash = {}  # distance2:index pairs
+#         for j in xrange(i,len(paths)):
+#             startpoint = paths[j][0]
+#             d2_hash[ (endpoint[0]-startpoint[0])**2 + (endpoint[1]-startpoint[1])**2 ] = j
+#         d2min = 9999999999999999.9
+#         d2minIndex = None
+#         for d2 in d2_hash:
+#             if d2 < d2min:
+#                 d2min = d2 
+#                 d2minIndex = d2_hash[d2]
+#         # make closest subpath next item
+#         if d2minIndex != i:
+#             tempItem = paths[i]
+#             paths[i] = paths[d2minIndex]
+#             paths[d2minIndex] = tempItem
+
+
+# def sort_by_seektime_test(paths, start=[0.0, 0.0], bucket_size=30):
+#     bucket_size = float(bucket_size)
+#     # calculate bbox of start points
+#     bbox = [9e9,9e9,0,0]  #xmin, ymin, xmax, ymin
+#     for path in paths:
+#         x = path[0][0]
+#         y = path[0][1]
+#         if x < bbox[0]:
+#             bbox[0] = x
+#         elif x > bbox[2]:
+#             bbox[2] = x
+#         if y < bbox[1]:
+#             bbox[1] = y
+#         elif y > bbox[3]:
+#             bbox[3] = y
+
+#     # sort paths by start/end points into square buckets
+#     xnum = int(math.ceil((bbox[2]-bbox[0])/bucket_size))
+#     ynum = int(math.ceil((bbox[3]-bbox[1])/bucket_size))
+#     buckets_start = [[] for x in xrange(xnum*ynum)]  # empty buckets
+#     buckets_end = [[] for x in xrange(xnum*ynum)]  # empty buckets
+#     for path in paths:
+#         # sort by start point
+#         start = path[0]
+#         xidx = int(math.floor(start[0]/bucket_size))
+#         yidx = int(math.floor(start[1]/bucket_size))
+#         buckets_start[xidx*yidx+yidx].append(path)  # column-first
+#         # sort by end point
+#         end = path[-1]
+#         xidx = int(math.floor(end[0]/bucket_size))
+#         yidx = int(math.floor(end[1]/bucket_size))
+#         buckets_end[xidx*yidx+yidx].append(path)  # column-first
+
+#     # sort within each bucket
+
+
+#     paths_by_start = {}
+#     for path in paths:
+#         vertkey = str(int(path[0][0]))+str(int(path[0][1]))
+#         try:
+#             paths_by_start[vertkey].append(path)
+#         except KeyError:
+#             paths_by_start[vertkey] = [path]
+
+
 def sort_by_seektime(paths, start=[0.0, 0.0]):
-    # sort paths to optimize seek distances in between
-    endpoint = start
-    for i in xrange(len(paths)):
-        if i > 0:
-            endpoint = paths[i-1][len(paths[i-1])-1]
-        # search the rest of array for closest path start point
-        d2_hash = {}  # distance2:index pairs
-        for j in xrange(i,len(paths)):
-            startpoint = paths[j][0]
-            d2_hash[ (endpoint[0]-startpoint[0])**2 + (endpoint[1]-startpoint[1])**2 ] = j
-        d2min = 9999999999999999.9
-        d2minIndex = None
-        for d2 in d2_hash:
-            if d2 < d2min:
-                d2min = d2 
-                d2minIndex = d2_hash[d2]
-        # make closest subpath next item
-        if d2minIndex != i:
-            tempItem = paths[i]
-            paths[i] = paths[d2minIndex]
-            paths[d2minIndex] = tempItem
+    paths_sorted = []
+    tree = kdtree.Tree(2)
+    
+    # populate kdtree
+    for path in paths:
+        tree.insert(path[0], path)  # startpoint, data
+
+    # sort by proximity, greedy
+    point = start
+    for p in paths:
+        node, distsq = tree.nearest(point, checkempty=True)
+        path = node.data  # also, pos = node.pos
+        node.data = None  # delete from kdtree, requires checkempty=True
+        paths_sorted.append(path)
+        point = path[-1]  # prime for next iteration
+
+    return paths_sorted
 
 
 
@@ -198,6 +282,6 @@ def optimize_all(boundarys, tolerance):
     tolerance2 = tolerance**2
     epsilon2 = (0.1*tolerance)**2
     for color in boundarys:
-        boundarys[color] = join_segments(boundarys[color], epsilon2)
+        boundarys[color] = connect_segments(boundarys[color], epsilon2)
         simplify_all(boundarys[color], tolerance2)
         sort_by_seektime(boundarys[color])
