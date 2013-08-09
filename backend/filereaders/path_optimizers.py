@@ -259,20 +259,24 @@ def simplify_all(paths, tolerance2):
 
 def sort_by_seektime(paths, start=[0.0, 0.0]):
     paths_sorted = []
-    tree = kdtree.Tree(2)
+    tree = kdtree.Tree()
     
     # populate kdtree
-    for path in paths:
-        tree.insert(path[0], path)  # startpoint, data
+    # for path in paths:
+    # for i in xrange(len(paths)):
+    #     tree.insert(paths[i][0], i)  # startpoint, data
+
+    tree.insert( ((paths[i][0],i) for i in xrange(len(paths))) )
 
     # sort by proximity, greedy
-    point = start
+    endpoint = start
     for p in paths:
-        node, distsq = tree.nearest(point, checkempty=True)
-        path = node.data  # also, pos = node.pos
-        node.data = None  # delete from kdtree, requires checkempty=True
-        paths_sorted.append(path)
-        point = path[-1]  # prime for next iteration
+        # print endpoint[0], endpoint[1]
+        i = tree.nearest(endpoint[0], endpoint[1])
+        # print i
+        # i = tree.nearest(0.0, 0.0)
+        paths_sorted.append(paths[i])
+        endpoint = paths[i][-1]  # prime for next iteration
 
     return paths_sorted
 
@@ -284,4 +288,4 @@ def optimize_all(boundarys, tolerance):
     for color in boundarys:
         boundarys[color] = connect_segments(boundarys[color], epsilon2)
         simplify_all(boundarys[color], tolerance2)
-        sort_by_seektime(boundarys[color])
+        boundarys[color] = sort_by_seektime(boundarys[color])
