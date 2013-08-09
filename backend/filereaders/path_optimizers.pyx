@@ -20,7 +20,7 @@ import logging
 
 log = logging.getLogger("svg_reader")
 
-import kdtree
+# import kdtree
 
 
 def connect_segments(paths, epsilon2):
@@ -188,9 +188,11 @@ def simplify_all(paths, tolerance2):
 
 
 
-def sort_by_seektime_old(paths, start=[0.0, 0.0]):
+def sort_by_seektime(paths, start=[0.0, 0.0]):
     # sort paths to optimize seek distances in between
     endpoint = start
+    cdef int i
+    cdef int j
     for i in xrange(len(paths)):
         if i > 0:
             endpoint = paths[i-1][len(paths[i-1])-1]
@@ -199,7 +201,6 @@ def sort_by_seektime_old(paths, start=[0.0, 0.0]):
         for j in xrange(i,len(paths)):
             startpoint = paths[j][0]
             d2_hash[ (endpoint[0]-startpoint[0])**2 + (endpoint[1]-startpoint[1])**2 ] = j
-
         d2min = 9999999999999999.9
         d2minIndex = None
         for d2 in d2_hash:
@@ -211,47 +212,6 @@ def sort_by_seektime_old(paths, start=[0.0, 0.0]):
             tempItem = paths[i]
             paths[i] = paths[d2minIndex]
             paths[d2minIndex] = tempItem
-
-
-
-def sort_by_seektime_brute(paths, startpoint=[0.0, 0.0], okdist=20):
-    """Optimize for short distance between path.
-
-    Uses a brute force approach with some smart optimizations.
-    - most of the time the next path is satisfyingly closest
-    - stop searching when a satisfyingly close path has been found
-
-    """
-    print len(paths)
-    end = startpoint
-    okdist2 = okdist**2
-    d2_hash = {}  # distance2:index
-    i_next = None
-
-    # for every position find closest path to last end point
-    for i in xrange(len(paths)):
-        d2_hash.clear()
-        i_next = None
-        # search in remaining paths
-        for j in xrange(i,len(paths)):
-            start = paths[j][0]
-            d2 = (end[0]-start[0])**2 + (end[1]-start[1])**2
-            if d2 < okdist2:
-                # satisfying next path found
-                i_next = j
-                break
-            d2_hash[d2] = j  # don't care about duplicates
-
-        if i_next is None:
-            i_next = d2_hash[min(d2_hash)]
-
-        # swap path to front
-        path_temp = paths[i]
-        paths[i] = paths[i_next]
-        paths[i_next] = path_temp
-
-        # endpoint for next iteration
-        end = paths[i][-1]
 
 
 # def sort_by_seektime_test(paths, start=[0.0, 0.0], bucket_size=30):
@@ -299,28 +259,28 @@ def sort_by_seektime_brute(paths, startpoint=[0.0, 0.0], okdist=20):
 #             paths_by_start[vertkey] = [path]
 
 
-def sort_by_seektime(paths, start=[0.0, 0.0]):
-    paths_sorted = []
-    tree = kdtree.Tree()
+# def sort_by_seektime(paths, start=[0.0, 0.0]):
+#     paths_sorted = []
+#     tree = kdtree.Tree()
     
-    # populate kdtree
-    # for path in paths:
-    # for i in xrange(len(paths)):
-    #     tree.insert(paths[i][0], i)  # startpoint, data
+#     # populate kdtree
+#     # for path in paths:
+#     # for i in xrange(len(paths)):
+#     #     tree.insert(paths[i][0], i)  # startpoint, data
 
-    tree.insert( ((paths[i][0],i) for i in xrange(len(paths))) )
+#     tree.insert( ((paths[i][0],i) for i in xrange(len(paths))) )
 
-    # sort by proximity, greedy
-    endpoint = start
-    for p in paths:
-        # print endpoint[0], endpoint[1]
-        i = tree.nearest(endpoint[0], endpoint[1])
-        # print i
-        # i = tree.nearest(0.0, 0.0)
-        paths_sorted.append(paths[i])
-        endpoint = paths[i][-1]  # prime for next iteration
+#     # sort by proximity, greedy
+#     endpoint = start
+#     for p in paths:
+#         # print endpoint[0], endpoint[1]
+#         i = tree.nearest(endpoint[0], endpoint[1])
+#         # print i
+#         # i = tree.nearest(0.0, 0.0)
+#         paths_sorted.append(paths[i])
+#         endpoint = paths[i][-1]  # prime for next iteration
 
-    return paths_sorted
+#     return paths_sorted
 
 
 
@@ -330,6 +290,4 @@ def optimize_all(boundarys, tolerance):
     for color in boundarys:
         boundarys[color] = connect_segments(boundarys[color], epsilon2)
         simplify_all(boundarys[color], tolerance2)
-        # boundarys[color] = sort_by_seektime(boundarys[color])
-        # sort_by_seektime_old(boundarys[color])
-        sort_by_seektime_brute(boundarys[color])
+        sort_by_seektime(boundarys[color])
