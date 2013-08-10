@@ -54,7 +54,7 @@ else:
 
         # .c to .o
         if args.beaglebone:
-            command = 'gcc -c -fPIC -O3 -march=armv6 -O3 -funroll-loops -funsafe-loop-optimizations -funsafe-math-optimizations -I/usr/include/python2.7/ %s.c -o %s.o' % (obj, obj)
+            command = 'gcc -c -fPIC -O3 -march=armv6 -O3 -funroll-loops -I/usr/include/python2.7/ %s.c -o %s.o' % (obj, obj)
         else:
             command = 'gcc -c -fPIC -O3 -I/usr/include/python2.7/ %s.c -o %s.o' % (obj, obj)
         ret += subprocess.call(command, shell=True)
