@@ -301,20 +301,23 @@ def sort_by_seektime_brute(paths, startpoint=[0.0, 0.0], okdist=20):
 
 def sort_by_seektime(paths, start=[0.0, 0.0]):
     paths_sorted = []
-    tree = kdtree.Tree()
+    tree = kdtree.Tree(2)
     
     # populate kdtree
     # for path in paths:
-    # for i in xrange(len(paths)):
-    #     tree.insert(paths[i][0], i)  # startpoint, data
+    for i in xrange(len(paths)):
+        tree.insert(paths[i][0], i)  # startpoint, data
 
-    tree.insert( ((paths[i][0],i) for i in xrange(len(paths))) )
+    # tree.insert( ((paths[i][0],i) for i in xrange(len(paths))) )
 
     # sort by proximity, greedy
     endpoint = start
     for p in paths:
         # print endpoint[0], endpoint[1]
-        i = tree.nearest(endpoint[0], endpoint[1])
+        # i = tree.nearest(endpoint[0], endpoint[1])
+        node, distsq = tree.nearest(endpoint, checkempty=True)
+        i = node.data
+        node.data = None
         # print i
         # i = tree.nearest(0.0, 0.0)
         paths_sorted.append(paths[i])

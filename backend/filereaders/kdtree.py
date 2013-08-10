@@ -82,8 +82,6 @@ class Node:
     #     return d.dot(d)
 
     def distance_squared(self, pos):
-        # TODO: make universal not just 2D
-        # return (self.pos[0]-pos[0])**2 + (self.pos[1]-pos[1])**2
         d2 = 0.0
         for i in range(len(pos)):
             d2 += (self.pos[i]-pos[i])**2

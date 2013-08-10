@@ -15,7 +15,7 @@ log = logging.getLogger("svg_reader")
 
 class SVGTagReader:
     
-    def __init__(self, svgreader, tolerance):
+    def __init__(self, svgreader):
 
         self.svgreader = svgreader
 
