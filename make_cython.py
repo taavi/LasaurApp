@@ -8,6 +8,8 @@ argparser.add_argument('-u', '--undo', dest='undo', action='store_true',
                        default=False, help='undo cython module')
 argparser.add_argument('-c', '--compile_all', dest='compile_all', action='store_true',
                        default=False, help='compile all .py files')
+argparser.add_argument('-b', '--beaglebone', dest='beaglebone', action='store_true',
+                       default=False, help='compile with beaglebone optimizations')
 args = argparser.parse_args()
 
 ret = 0
@@ -51,7 +53,10 @@ else:
             ret += subprocess.call(command, shell=True)
 
         # .c to .o
-        command = 'gcc -c -fPIC -I/usr/include/python2.7/ %s.c -o %s.o' % (obj, obj)
+        if args.beaglebone:
+            command = 'gcc -c -fPIC -O3 -march=armv6 -mcpu=arm1176jzf-s -O3 -funroll-loops -funsafe-loop-optimizations -funsafe-math-optimizations -I/usr/include/python2.7/ %s.c -o %s.o' % (obj, obj)
+        else:
+            command = 'gcc -c -fPIC -O3 -I/usr/include/python2.7/ %s.c -o %s.o' % (obj, obj)
         ret += subprocess.call(command, shell=True)
 
         # .o to .so
