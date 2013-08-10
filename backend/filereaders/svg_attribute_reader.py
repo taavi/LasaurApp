@@ -50,7 +50,8 @@ class SVGAttributeReader:
 
         self.re_findall_transforms = re.compile('(([a-z]+)\s*\(([^)]*)\))', re.IGNORECASE).findall
         self.re_findall_pathelems = re.compile('([A-Za-z]|-?[0-9]+\.?[0-9]*(?:e-?[0-9]*)?)').findall
-
+        self.re_findall_unitparts = re.compile('(-?[0-9]+\.?[0-9]*(?:e-?[0-9]+)?)(cm|mm|pt|pc|in|%|em|ex)?').findall
+        self.re_findall_unitparts = re.compile('(-?[0-9]+\.?[0-9]*(?:e-?[0-9]+)?)(cm|mm|pt|pc|in|%|em|ex)?').findall
 
     def read_attrib(self, node, attr, value):
         """Read any attribute.
@@ -58,7 +59,7 @@ class SVGAttributeReader:
         This function delegates according to the _handlers map.
         """
         if attr in self._handlers and value.strip() != '':
-            log.debug("reading attrib: " + attr + ":" + value)
+            # log.debug("reading attrib: " + attr + ":" + value)
             self._handlers[attr](node, attr, value)
 
 
@@ -206,25 +207,49 @@ class SVGAttributeReader:
 
     def _parseUnit(self, val):
         if val is not None:
-            val = val.strip().lower()
-            floats = parseFloats(val)
-            if len(floats) == 1:
-                num = floats[0]
-                if val.endswith('cm'):
+            vals = self.re_findall_unitparts(val)
+            # [('123', 'em'), ('-10', 'cm')]
+            if vals:
+                num = float(vals[0][0])
+                unit = vals[0][1]
+                if unit == '':
+                    return num
+                
+                if unit == 'cm':
                     num *= self.svgreader.dpi/2.54
-                elif val.endswith('mm'):
+                elif unit == 'mm':
                     num *= self.svgreader.dpi/25.4
-                elif val.endswith('pt'):
+                elif unit == 'pt':
                     num *= self.svgreader.dpi/72.0
-                elif val.endswith('pc'):
+                elif unit == 'pc':
                     num *= 12*self.svgreader.dpi/72
-                elif val.endswith('in'):
+                elif unit == 'in':
                     num *= self.svgreader.dpi
-                elif val.endswith('%') or val.endswith('em') or val.endswith('ex'):
+                elif unit == '%' or unit == 'em' or unit == 'ex':
                     log.error("%, em, ex dimension units not supported, use px or mm instead")
-                return num          
-        log.error("invalid dimension")
+                    
+                return num
+            log.error("invalid dimension")
         return None
+        #     val = val.strip().lower()
+        #     floats = parseFloats(val)
+        #     if len(floats) == 1:
+        #         num = floats[0]
+        #         if val.endswith('cm'):
+        #             num *= self.svgreader.dpi/2.54
+        #         elif val.endswith('mm'):
+        #             num *= self.svgreader.dpi/25.4
+        #         elif val.endswith('pt'):
+        #             num *= self.svgreader.dpi/72.0
+        #         elif val.endswith('pc'):
+        #             num *= 12*self.svgreader.dpi/72
+        #         elif val.endswith('in'):
+        #             num *= self.svgreader.dpi
+        #         elif val.endswith('%') or val.endswith('em') or val.endswith('ex'):
+        #             log.error("%, em, ex dimension units not supported, use px or mm instead")
+        #         return num          
+        # log.error("invalid dimension")
+        # return None
 
 
     def _parseColor(self, val):

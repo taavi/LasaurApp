@@ -243,7 +243,7 @@ class SVGReader:
     
     def parse_children(self, domNode, parentNode):
         for child in domNode:
-            log.debug("considering tag: " + child.tag)
+            # log.debug("considering tag: " + child.tag)
             if self._tagReader.has_handler(child):
                 # 1. setup a new node
                 # and inherit from parent

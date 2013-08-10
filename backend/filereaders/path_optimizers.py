@@ -67,6 +67,61 @@ def connect_segments(paths, epsilon2):
     return nPaths
 
 
+def d2(u,v): return (u[0]-v[0])**2 + (u[1]-v[1])**2
+
+
+def simplifyDP(tol2, v, j, k, mk):
+    #  This is the Douglas-Peucker recursive simplification routine
+    #  It just marks vertices that are part of the simplified polyline
+    #  for approximating the polyline subchain v[j] to v[k].
+    #  mk[] ... array of markers matching vertex array v[]
+    if k <= j+1:  # there is nothing to simplify
+        return
+    # check for adequate approximation by segment S from v[j] to v[k]
+    maxi = j           # index of vertex farthest from S
+    maxd2 = 0          # distance squared of farthest vertex
+    S = [v[j], v[k]]   # segment from v[j] to v[k]
+    # u = diff(S[1], S[0])    # segment direction vector
+    u = [S[1][0]-S[0][0], S[1][1]-S[0][1]]  # segment direction vector
+    # cu = norm2(u)      # segment length squared
+    cu = u[0]**2 + u[1]**2  # segment length squared
+    # test each vertex v[i] for max distance from S
+    # compute using the Feb 2001 Algorithm's dist_Point_to_Segment()
+    # Note: this works in any dimension (2D, 3D, ...)
+    w = None           # vector
+    Pb = None          # point, base of perpendicular from v[i] to S
+    b = 0.0
+    cw = 0.0
+    dv2 = 0.0         # dv2 = distance v[i] to S squared
+    for i in xrange(j+1, k):
+        # compute distance squared
+        # w = diff(v[i], S[0])
+        w = [v[i][0]-S[0][0], v[i][1]-S[0][1]]  # diff
+        # cw = dot(w,u)
+        cw = w[0]*u[0] + w[1]*u[1]  # dot product
+        if cw <= 0:
+            dv2 = d2(v[i], S[0])
+        elif cu <= cw:
+            dv2 = d2(v[i], S[1])
+        else:
+            b = cw / cu
+            Pb = [S[0][0]+b*u[0], S[0][1]+b*u[1]]
+            dv2 = d2(v[i], Pb)
+        # test with current max distance squared
+        if dv2 <= maxd2:
+            continue
+        # v[i] is a new max vertex
+        maxi = i
+        maxd2 = dv2
+    if maxd2 > tol2:       # error is worse than the tolerance
+        # split the polyline at the farthest vertex from S
+        mk[maxi] = 1       # mark v[maxi] for the simplified polyline
+        # recursively simplify the two subpolylines at v[maxi]
+        simplifyDP(tol2, v, j, maxi, mk)  # polyline v[j] to v[maxi]
+        simplifyDP(tol2, v, maxi, k, mk)  # polyline v[maxi] to v[k]
+    # else the approximation is OK, so ignore intermediate vertices
+    return
+
 
 def simplify(path, tolerance2):
     """
@@ -83,62 +138,6 @@ def simplify(path, tolerance2):
     Users of this code must verify correctness for their application.
     http://softsurfer.com/Archive/algorithm_0205/algorithm_0205.htm
     """
-    def sum(u,v): return [u[0]+v[0], u[1]+v[1]]
-    def diff(u,v): return [u[0]-v[0], u[1]-v[1]]
-    def prod(u,v): return [u[0]*v[0], u[1]*v[1]]
-    def dot(u,v): return u[0]*v[0] + u[1]*v[1]
-    def norm2(v): return v[0]*v[0] + v[1]*v[1]
-    def norm(v): return math.sqrt(norm2(v))
-    def d2(u,v): return norm2(diff(u,v))
-    def d(u,v): return norm(diff(u,v))
-    
-    def simplifyDP(tol2, v, j, k, mk):
-        #  This is the Douglas-Peucker recursive simplification routine
-        #  It just marks vertices that are part of the simplified polyline
-        #  for approximating the polyline subchain v[j] to v[k].
-        #  mk[] ... array of markers matching vertex array v[]
-        if k <= j+1:  # there is nothing to simplify
-            return
-        # check for adequate approximation by segment S from v[j] to v[k]
-        maxi = j           # index of vertex farthest from S
-        maxd2 = 0          # distance squared of farthest vertex
-        S = [v[j], v[k]]   # segment from v[j] to v[k]
-        u = diff(S[1], S[0])    # segment direction vector
-        cu = norm2(u)      # segment length squared
-        # test each vertex v[i] for max distance from S
-        # compute using the Feb 2001 Algorithm's dist_Point_to_Segment()
-        # Note: this works in any dimension (2D, 3D, ...)
-        w = None           # vector
-        Pb = None          # point, base of perpendicular from v[i] to S
-        b = None
-        cw = None
-        dv2 = None         # dv2 = distance v[i] to S squared
-        for i in xrange(j+1, k):
-            # compute distance squared
-            w = diff(v[i], S[0])
-            cw = dot(w,u)
-            if cw <= 0:
-                dv2 = d2(v[i], S[0])
-            elif cu <= cw:
-                dv2 = d2(v[i], S[1])
-            else:
-                b = cw / cu
-                Pb = [S[0][0]+b*u[0], S[0][1]+b*u[1]]
-                dv2 = d2(v[i], Pb)
-            # test with current max distance squared
-            if dv2 <= maxd2:
-                continue
-            # v[i] is a new max vertex
-            maxi = i
-            maxd2 = dv2
-        if maxd2 > tol2:       # error is worse than the tolerance
-            # split the polyline at the farthest vertex from S
-            mk[maxi] = 1       # mark v[maxi] for the simplified polyline
-            # recursively simplify the two subpolylines at v[maxi]
-            simplifyDP(tol2, v, j, maxi, mk)  # polyline v[j] to v[maxi]
-            simplifyDP(tol2, v, maxi, k, mk)  # polyline v[maxi] to v[k]
-        # else the approximation is OK, so ignore intermediate vertices
-        return
     
     n = len(path)
     if n == 0:

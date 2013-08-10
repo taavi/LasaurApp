@@ -59,10 +59,10 @@ class SVGTagReader:
         """
         tagName = self._get_tag(tag)
         if tagName in self._handlers:
-            log.debug("reading tag: " + tagName)
+            # log.debug("reading tag: " + tagName)
             # parse own attributes and overwrite in node
             for attr,value in tag.attrib.items():
-                log.debug("considering attrib: " + attr)
+                # log.debug("considering attrib: " + attr)
                 self._attribReader.read_attrib(node, attr, value)
             # accumulate transformations
             node['xformToWorld'] = matrixMult(node['xformToWorld'], node['xform'])

@@ -55,7 +55,7 @@ else:
         # .c to .o
         if args.beaglebone:
             # command = 'gcc -c -fPIC -O3 -march=armv5 -I/usr/include/python2.7/ %s.c -o %s.o' % (obj, obj)
-            command = 'gcc -c -fPIC -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -fsingle-precision-constant -I/usr/include/python2.7/ %s.c -o %s.o' % (obj, obj)
+            command = 'gcc -c -fPIC -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -ffast-math -fsingle-precision-constant -I/usr/include/python2.7/ %s.c -o %s.o' % (obj, obj)
             # see http://linuxreviews.org/man/gcc/
             # see http://pandorawiki.org/Floating_Point_Optimization
         else:
