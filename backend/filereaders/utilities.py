@@ -6,14 +6,14 @@ re_findall_floats = re.compile('(-?[0-9]+\.?[0-9]*(?:e-?[0-9]*)?)').findall
 
 
 def parseFloats(float_strings):
-	"""Convert a list of float strings to an actual list of floats.
+    """Convert a list of float strings to an actual list of floats.
 
-	The function can deal with pretty much any separation chars.
-	"""
-	float_strings = re_findall_floats(float_strings)
-	for i in range(len(float_strings)):  # use index so we can edit in-place
-		float_strings[i] = float(float_strings[i])
-	return float_strings
+    The function can deal with pretty much any separation chars.
+    """
+    float_strings = re_findall_floats(float_strings)
+    for i in range(len(float_strings)):  # use index so we can edit in-place
+        float_strings[i] = float(float_strings[i])
+    return float_strings
 
 
 def matrixMult(mA, mB):

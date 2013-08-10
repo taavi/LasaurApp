@@ -14,7 +14,8 @@ log = logging.getLogger("svg_reader")
 
 class SVGAttributeReader:
 
-    def __init__(self):
+    def __init__(self, svgreader):
+        self.svgreader = svgreader
         self.DEG_TO_RAD = math.pi/180
         self.RAD_TO_DEG = 180/math.pi
 
@@ -52,41 +53,41 @@ class SVGAttributeReader:
 
 
     def read_attrib(self, node, attr, value):
-    	"""Read any attribute.
+        """Read any attribute.
 
-    	This function delegates according to the _handlers map.
-    	"""
+        This function delegates according to the _handlers map.
+        """
         if attr in self._handlers and value.strip() != '':
-        	log.debug("reading attrib: " + attr + ":" + value)
-        	self._handlers[attr](node, attr, value)
+            log.debug("reading attrib: " + attr + ":" + value)
+            self._handlers[attr](node, attr, value)
 
 
 
     def stringAttrib(self, node, attr, value):
-    	"""Read a string attribute."""
+        """Read a string attribute."""
         if value != 'inherit':
             node[attr] = value
 
 
     def opacityAttrib(self, node, attr, value):
-    	"""Read a opacity attribute."""
+        """Read a opacity attribute."""
         try:
             node[attr] = min(1.0,max(0.0,float(value)))
         except ValueError:
-        	log.warn("invalid opacity, default to 1.0")
-        	node[attr] = 1.0
+            log.warn("invalid opacity, default to 1.0")
+            node[attr] = 1.0
 
     def dimensionAttrib(self, node, attr, value):
-    	"""Read a dimension attribute."""
+        """Read a dimension attribute."""
         node[attr] = self._parseUnit(value)
 
     def colorAttrib(self, node, attr, value):
         # http://www.w3.org/TR/SVG11/color.html
         # http://www.w3.org/TR/SVG11/painting.html#SpecifyingPaint
-    	"""Read a color attribute."""
+        """Read a color attribute."""
         col = self._parseColor(value)
         if col != 'inherit':
-	        node[attr] = col
+            node[attr] = col
 
 
 
@@ -193,37 +194,37 @@ class SVGAttributeReader:
 
 
     def pointsAttrib(self, node, attr, value):
-    	"""Read the 'points' attribute."""
-    	floats = parseFloats(value)
+        """Read the 'points' attribute."""
+        floats = parseFloats(value)
         if len(floats) % 2 == 0:
             node[attr] = floats
         else:
-        	log.error("odd number of vertices")
+            log.error("odd number of vertices")
 
 
 
 
     def _parseUnit(self, val):
         if val is not None:
-        	val = val.strip().lower()
-        	floats = parseFloats(val)
-        	if len(floats) == 1:
-	            num = floats[0]
-	            if val.endswith('cm'):
-	            	num *= this.dpi/2.54
-	            elif val.endswith('mm'):
-                	num *= this.dpi/25.4
+            val = val.strip().lower()
+            floats = parseFloats(val)
+            if len(floats) == 1:
+                num = floats[0]
+                if val.endswith('cm'):
+                    num *= self.svgreader.dpi/2.54
+                elif val.endswith('mm'):
+                    num *= self.svgreader.dpi/25.4
                 elif val.endswith('pt'):
-                    num *= this.dpi/72.0
+                    num *= self.svgreader.dpi/72.0
                 elif val.endswith('pc'):
-                    num *= 12*this.dpi/72
+                    num *= 12*self.svgreader.dpi/72
                 elif val.endswith('in'):
-                    num *= this.dpi
+                    num *= self.svgreader.dpi
                 elif val.endswith('%') or val.endswith('em') or val.endswith('ex'):
-                	log.error("%, em, ex dimension units not supported, use px or mm instead")
-                return num     		
-		log.error("invalid dimension")
-		return None
+                    log.error("%, em, ex dimension units not supported, use px or mm instead")
+                return num          
+        log.error("invalid dimension")
+        return None
 
 
     def _parseColor(self, val):
@@ -233,7 +234,7 @@ class SVGAttributeReader:
         'none' means that the geometry is not to be rendered.
         See: http://www.w3.org/TR/SVG11/painting.html#SpecifyingPaint
         """
-    	# http://www.w3.org/TR/SVG11/color.html	
+        # http://www.w3.org/TR/SVG11/color.html 
         # http://www.w3.org/TR/2008/REC-CSS2-20080411/syndata.html#color-units
         val = val.strip()
         if val[0] == '#':
@@ -261,7 +262,7 @@ class SVGAttributeReader:
         elif val in ['currentColor', 'inherit']:
             return 'inherit'
         else:
-	        log.warn("invalid color, skipped: " + str(val))
-	        return 'inherit'
+            log.warn("invalid color, skipped: " + str(val))
+            return 'inherit'
 
 

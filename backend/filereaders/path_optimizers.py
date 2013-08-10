@@ -330,6 +330,6 @@ def optimize_all(boundarys, tolerance):
     for color in boundarys:
         boundarys[color] = connect_segments(boundarys[color], epsilon2)
         simplify_all(boundarys[color], tolerance2)
-        # boundarys[color] = sort_by_seektime(boundarys[color])
+        boundarys[color] = sort_by_seektime(boundarys[color])
         # sort_by_seektime_old(boundarys[color])
-        sort_by_seektime_brute(boundarys[color])
+        # sort_by_seektime_brute(boundarys[color])

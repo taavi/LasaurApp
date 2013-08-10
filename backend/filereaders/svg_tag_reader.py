@@ -15,12 +15,14 @@ log = logging.getLogger("svg_reader")
 
 class SVGTagReader:
     
-    def __init__(self, tolerance):
+    def __init__(self, svgreader, tolerance):
+
+        self.svgreader = svgreader
 
         # init helper for attribute reading
-        self._attribReader = SVGAttributeReader()
+        self._attribReader = SVGAttributeReader(svgreader)
         # init helper for path handling
-        self._pathReader = SVGPathReader(tolerance)
+        self._pathReader = SVGPathReader(svgreader)
 
         self._handlers = {
             'g': self.g,
