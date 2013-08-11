@@ -23,6 +23,10 @@ import timeit
 import pstats
 import argparse
 
+<<<<<<< HEAD
+=======
+from filereaders import read_svg
+>>>>>>> parent of 1d676a1... working on conditional c-module import
 
 ### Setup Argument Parser
 argparser = argparse.ArgumentParser(description='Run LasaurApp.', prog='lasaurapp')
@@ -31,9 +35,7 @@ argparser.add_argument('svg_file', metavar='svg_file', nargs='?', default=False,
 argparser.add_argument('-p', '--profile', dest='profile', action='store_true',
                     default=False, help='run with profiling')  
 argparser.add_argument('-t', '--timeit', dest='timeit', action='store_true',
-                    default=False, help='run with timing')    
-argparser.add_argument('-o', '--optimize', dest='optimize', action='store_true',
-                    default=False, help='try loading optimize c modules')                                   
+                    default=False, help='run with timing')                                       
 args = argparser.parse_args()
 
 

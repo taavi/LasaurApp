@@ -535,9 +535,7 @@ argparser.add_argument('--beaglebone', dest='beaglebone', action='store_true',
 argparser.add_argument('--raspberrypi', dest='raspberrypi', action='store_true',
                     default=False, help='use this for running on Raspberry Pi')
 argparser.add_argument('-m', '--match', dest='match',
-                    default=GUESS_PREFIX, help='match serial device with this string')  
-argparser.add_argument('-o', '--optimize', dest='optimize', action='store_true',
-                    default=False, help='try loading optimize c modules')                                        
+                    default=GUESS_PREFIX, help='match serial device with this string')                                        
 args = argparser.parse_args()
 
 
@@ -545,7 +543,6 @@ args = argparser.parse_args()
 print "LasaurApp " + VERSION
 
 if args.beaglebone:
-    args.optimize = True  # also try loading optimized C modules
     HARDWARE = 'beaglebone'
     NETWORK_PORT = 80
     ### if running on beaglebone, setup (pin muxing) and use UART1
