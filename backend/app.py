@@ -547,6 +547,7 @@ shared.args = args
 print "LasaurApp " + VERSION
 
 if args.beaglebone:
+    shared.args.optimize = True
     HARDWARE = 'beaglebone'
     NETWORK_PORT = 80
     ### if running on beaglebone, setup (pin muxing) and use UART1
