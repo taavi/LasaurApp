@@ -40,12 +40,14 @@ args = argparser.parse_args()
 shared.args = args
 from filereaders import read_svg
 
+thislocation = os.path.dirname(os.path.realpath(__file__))
+svgpath = os.path.join(thislocation, '..', 'other', 'test_svgs')
 
 def main():
     print "running"
-    svgstring = open("../other/test_svgs/full-bed.svg").read()
-    # svgstring = open("../other/test_svgs/rocket_full.svg").read()
-    # svgstring = open("../other/test_svgs/Steven and Chris Picture Frame - with ERROR.svg").read()
+    svgstring = open(os.path.join(svgpath, "full-bed.svg").read()
+    # svgstring = open(os.path.join(svgpath, "rocket_full.svg").read()
+    # svgstring = open(os.path.join(svgpath, "Steven and Chris Picture Frame - with ERROR.svg").read()
     boundarys = read_svg(svgstring, [1220,610], 0.08)
 
 def yo():

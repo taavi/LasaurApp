@@ -16,20 +16,21 @@ argparser.add_argument('-b', '--beaglebone', dest='beaglebone', action='store_tr
 args = argparser.parse_args()
 
 ret = 0
+thislocation = os.path.dirname(os.path.realpath(__file__))
 
 if args.module:
     OBJECTS  = [args.module]
 else:
     OBJECTS  = [
-        "filereaders/dxf_reader",
-        "filereaders/kdtree",
-        "filereaders/path_optimizers",
-        "filereaders/svg_attribute_reader",
-        "filereaders/svg_path_reader",
-        "filereaders/svg_reader",
-        "filereaders/svg_tag_reader",
-        "filereaders/utilities",
-        "filereaders/webcolors"
+        os.path.join(thislocation, "filereaders", "dxf_reader"),
+        os.path.join(thislocation, "filereaders", "kdtree",
+        os.path.join(thislocation, "filereaders", "path_optimizers",
+        os.path.join(thislocation, "filereaders", "svg_attribute_reader",
+        os.path.join(thislocation, "filereaders", "svg_path_reader",
+        os.path.join(thislocation, "filereaders", "svg_reader",
+        os.path.join(thislocation, "filereaders", "svg_tag_reader",
+        os.path.join(thislocation, "filereaders", "utilities",
+        os.path.join(thislocation, "filereaders", "webcolors"
     ]
 
 if args.undo:
@@ -48,6 +49,12 @@ if args.undo:
         f = '%s.pyc' % (obj)
         if os.path.isfile(f):
             os.remove(f)
+
+        # rename back, any files
+        f_src = '%s_c.py' % (obj)
+        f_dst = '%s.py' % (obj)
+        if os.path.isfile(f_src):
+            shutil.move(f_src, f_dst)
 
 else:
     for obj in OBJECTS:
@@ -82,8 +89,8 @@ else:
 
         # .c to .o
         if args.beaglebone:
-            # command = 'gcc -c -fPIC -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -ffast-math -fsingle-precision-constant -I/usr/include/python2.7/ %s_c.c -o %s_c.o' % (obj, obj)
-            command = 'gcc -c -fPIC -O3 -march=arm -I/usr/include/python2.7/ %s_c.c -o %s_c.o' % (obj, obj)
+            command = 'gcc -c -fPIC -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -ffast-math -fsingle-precision-constant -I/usr/include/python2.7/ %s_c.c -o %s_c.o' % (obj, obj)
+            # command = 'gcc -c -fPIC -O3 -march=arm -I/usr/include/python2.7/ %s_c.c -o %s_c.o' % (obj, obj)
             # see http://linuxreviews.org/man/gcc/
             # see http://pandorawiki.org/Floating_Point_Optimization
         else:
