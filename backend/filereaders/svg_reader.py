@@ -5,9 +5,15 @@ import re
 import math
 import logging
 
-from .webcolors import hex_to_rgb, rgb_to_hex
-from .utilities import matrixMult, matrixApply, vertexScale, parseFloats
-from .svg_tag_reader import SVGTagReader
+import shared
+if shared.args.optimize:
+    from .webcolors_c import hex_to_rgb, rgb_to_hex
+    from .utilities_c import matrixMult, matrixApply, vertexScale, parseFloats
+    from .svg_tag_reader_c import SVGTagReader
+else:
+    from .webcolors import hex_to_rgb, rgb_to_hex
+    from .utilities import matrixMult, matrixApply, vertexScale, parseFloats
+    from .svg_tag_reader import SVGTagReader
 
 
 logging.basicConfig()

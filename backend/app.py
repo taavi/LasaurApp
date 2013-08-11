@@ -7,7 +7,6 @@ from bottle import *
 from serial_manager import SerialManager
 from flash import flash_upload, reset_atmega
 from build import build_firmware
-from filereaders import read_svg, read_dxf
 
 
 APPNAME = "lasaurapp"
@@ -534,10 +533,16 @@ argparser.add_argument('--beaglebone', dest='beaglebone', action='store_true',
                     default=False, help='use this for running on beaglebone')
 argparser.add_argument('--raspberrypi', dest='raspberrypi', action='store_true',
                     default=False, help='use this for running on Raspberry Pi')
+argparser.add_argument('-o', '--optimize', dest='optimize', action='store_true',
+                    default=False, help='use optimized c-extensions')
 argparser.add_argument('-m', '--match', dest='match',
                     default=GUESS_PREFIX, help='match serial device with this string')                                        
 args = argparser.parse_args()
 
+# make args available to other modules
+import shared
+shared.args = args
+from filereaders import read_svg, read_dxf
 
 
 print "LasaurApp " + VERSION

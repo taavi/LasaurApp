@@ -6,9 +6,15 @@ File Reader Module
 __author__ = 'Stefan Hechenberger <stefan@nortd.com>'
 
 
-from .svg_reader import SVGReader
-from .dxf_reader import DXFReader
-from .path_optimizers import optimize_all
+import shared
+if shared.args.optimize:
+    from .svg_reader_c import SVGReader
+    from .dxf_reader_c import DXFReader
+    from .path_optimizers_c import optimize_all
+else:
+    from .svg_reader import SVGReader
+    from .dxf_reader import DXFReader
+    from .path_optimizers import optimize_all
 
 
 def read_svg(svg_string, target_size, tolerance, forced_dpi=None, optimize=True):

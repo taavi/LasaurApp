@@ -5,8 +5,13 @@ import re
 import math
 import logging
 
-from .webcolors import rgb_to_hex, normalize_hex, css3_names_to_hex
-from .utilities import matrixMult, parseFloats
+import shared
+if shared.args.optimize:
+    from .webcolors_c import rgb_to_hex, normalize_hex, css3_names_to_hex
+    from .utilities_c import matrixMult, parseFloats
+else:
+    from .webcolors import rgb_to_hex, normalize_hex, css3_names_to_hex
+    from .utilities import matrixMult, parseFloats
 
 log = logging.getLogger("svg_reader")
 

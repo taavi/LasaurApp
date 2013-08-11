@@ -5,9 +5,15 @@ import re
 import math
 import logging
 
-from .utilities import matrixMult, parseFloats
-from .svg_attribute_reader import SVGAttributeReader
-from .svg_path_reader import SVGPathReader
+import shared
+if shared.args.optimize:
+    from .utilities_c import matrixMult, parseFloats
+    from .svg_attribute_reader_c import SVGAttributeReader
+    from .svg_path_reader_c import SVGPathReader
+else:
+    from .utilities import matrixMult, parseFloats
+    from .svg_attribute_reader import SVGAttributeReader
+    from .svg_path_reader import SVGPathReader
 
 log = logging.getLogger("svg_reader")
 
