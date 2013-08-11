@@ -8,6 +8,7 @@ from serial_manager import SerialManager
 from flash import flash_upload, reset_atmega
 from build import build_firmware
 from filereaders import read_svg, read_dxf
+import shared
 
 
 APPNAME = "lasaurapp"
@@ -535,14 +536,19 @@ argparser.add_argument('--beaglebone', dest='beaglebone', action='store_true',
 argparser.add_argument('--raspberrypi', dest='raspberrypi', action='store_true',
                     default=False, help='use this for running on Raspberry Pi')
 argparser.add_argument('-m', '--match', dest='match',
-                    default=GUESS_PREFIX, help='match serial device with this string')                                        
+                    default=GUESS_PREFIX, help='match serial device with this string')  
+argparser.add_argument('-o', '--optimize', dest='optimize', action='store_true',
+                    default=False, help='try loading optimize c modules')                                        
 args = argparser.parse_args()
+# make accessible to other modules
+shared.args = args
 
 
 
 print "LasaurApp " + VERSION
 
 if args.beaglebone:
+    args.optimize = True  # also try loading optimized C modules
     HARDWARE = 'beaglebone'
     NETWORK_PORT = 80
     ### if running on beaglebone, setup (pin muxing) and use UART1
