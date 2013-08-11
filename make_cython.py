@@ -14,17 +14,16 @@ args = argparser.parse_args()
 
 ret = 0
 
-# OBJECTS  = ["backend/filereaders/path_optimizers", "backend/filereaders/kdtree"]
 OBJECTS  = [
-    # "backend/filereaders/dxf_reader",
-    # "backend/filereaders/kdtree",
-    # "backend/filereaders/path_optimizers",
-    # "backend/filereaders/svg_attribute_reader",
+    "backend/filereaders/dxf_reader",
+    "backend/filereaders/kdtree",
+    "backend/filereaders/path_optimizers",
+    "backend/filereaders/svg_attribute_reader",
     "backend/filereaders/svg_path_reader",
-    # "backend/filereaders/svg_reader",
-    # "backend/filereaders/svg_tag_reader",
-    # "backend/filereaders/utilities",
-    # "backend/filereaders/webcolors"
+    "backend/filereaders/svg_reader",
+    "backend/filereaders/svg_tag_reader",
+    "backend/filereaders/utilities",
+    "backend/filereaders/webcolors"
 ]
 
 if args.undo:
