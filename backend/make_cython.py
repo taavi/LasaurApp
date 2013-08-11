@@ -23,14 +23,14 @@ if args.module:
 else:
     OBJECTS  = [
         os.path.join(thislocation, "filereaders", "dxf_reader"),
-        os.path.join(thislocation, "filereaders", "kdtree",
-        os.path.join(thislocation, "filereaders", "path_optimizers",
-        os.path.join(thislocation, "filereaders", "svg_attribute_reader",
-        os.path.join(thislocation, "filereaders", "svg_path_reader",
-        os.path.join(thislocation, "filereaders", "svg_reader",
-        os.path.join(thislocation, "filereaders", "svg_tag_reader",
-        os.path.join(thislocation, "filereaders", "utilities",
-        os.path.join(thislocation, "filereaders", "webcolors"
+        os.path.join(thislocation, "filereaders", "kdtree"),
+        os.path.join(thislocation, "filereaders", "path_optimizers"),
+        os.path.join(thislocation, "filereaders", "svg_attribute_reader"),
+        os.path.join(thislocation, "filereaders", "svg_path_reader"),
+        os.path.join(thislocation, "filereaders", "svg_reader"),
+        os.path.join(thislocation, "filereaders", "svg_tag_reader"),
+        os.path.join(thislocation, "filereaders", "utilities"),
+        os.path.join(thislocation, "filereaders", "webcolors")
     ]
 
 if args.undo:
