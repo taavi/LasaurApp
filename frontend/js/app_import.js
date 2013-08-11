@@ -31,6 +31,7 @@ $(document).ready(function(){
     
     if (browser_supports_file_api) {
       if (input.files[0]) {
+        disable_hardware_polling();
         var fr = new FileReader()
         fr.onload = sendToBackend
         fr.readAsText(input.files[0])
@@ -87,6 +88,7 @@ $(document).ready(function(){
       },
       complete: function (data) {
         $('#svg_import_btn').button('reset');
+        enable_hardware_polling();
         forceSvgDpiTo = undefined;  // reset
       }
     });

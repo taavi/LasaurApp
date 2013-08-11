@@ -11,8 +11,8 @@ argparser.add_argument('-u', '--undo', dest='undo', action='store_true',
                        default=False, help='undo cython module')
 argparser.add_argument('--pyx_only', dest='pyx_only', action='store_true',
                        default=False, help='only .pyx files instead of all .py files')
-argparser.add_argument('-b', '--beaglebone', dest='beaglebone', action='store_true',
-                       default=False, help='compile with beaglebone optimizations')
+argparser.add_argument('--x86', dest='x86', action='store_true',
+                       default=False, help='compile for PC not beaglebone')
 args = argparser.parse_args()
 
 ret = 0
@@ -88,7 +88,7 @@ else:
                 shutil.move(f_src, f_dst)
 
         # .c to .o
-        if args.beaglebone:
+        if not args.x86:
             command = 'gcc -c -fPIC -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -ffast-math -fsingle-precision-constant -I/usr/include/python2.7/ %s_c.c -o %s_c.o' % (obj, obj)
             # command = 'gcc -c -fPIC -O3 -march=arm -I/usr/include/python2.7/ %s_c.c -o %s_c.o' % (obj, obj)
             # see http://linuxreviews.org/man/gcc/

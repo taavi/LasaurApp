@@ -257,6 +257,9 @@ function mapConstrainIntesity(intens) {
 }
 
 
+// function placeholders
+var enable_hardware_polling = null;
+var disable_hardware_polling = null;
 
 
 
@@ -294,6 +297,9 @@ $(document).ready(function(){
   	  $("#connect_btn").addClass("btn-warning");     
     }
   }
+
+  var firmware_version_reported = false;
+  var poll_hardware_timer = null;
     
   // get hardware status
   function poll_hardware_status() {
@@ -371,13 +377,24 @@ $(document).ready(function(){
       connect_btn_set_state(false); 
     });
   }
+  
+  enable_hardware_polling = function() {
+    poll_hardware_timer = setInterval(function() {
+      poll_hardware_status();
+    }, 4000);
+  }
+
+  disable_hardware_polling = function() {
+    clearInterval(poll_hardware_timer);
+  }
+
   // call once, to get immediate status
-    poll_hardware_status();
-  // register with timed callback
-  var firmware_version_reported = false
-  var connectiontimer = setInterval(function() {
-    poll_hardware_status();
-  }, 4000);
+  poll_hardware_status();
+
+  // start polling
+  enable_hardware_polling();
+
+
 
   connect_btn_width = $("#connect_btn").innerWidth();
   $("#connect_btn").width(connect_btn_width);
