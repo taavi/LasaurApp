@@ -21,10 +21,8 @@ import logging
 import shared
 if shared.args.optimize:
     import kdtree_c as kdtree
-    print "opti kdtree"
 else:
     import kdtree
-    print "normal kdtree"
 
 log = logging.getLogger("svg_reader")
 
