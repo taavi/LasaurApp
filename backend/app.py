@@ -7,7 +7,8 @@ from bottle import *
 from serial_manager import SerialManager
 from flash import flash_upload, reset_atmega
 from build import build_firmware
-
+from filereaders import read_svg, read_dxf
+import shared
 
 APPNAME = "lasaurapp"
 VERSION = "13.08"
@@ -540,9 +541,7 @@ argparser.add_argument('-m', '--match', dest='match',
 args = argparser.parse_args()
 
 # make args available to other modules
-import shared
 shared.args = args
-from filereaders import read_svg, read_dxf
 
 
 print "LasaurApp " + VERSION
