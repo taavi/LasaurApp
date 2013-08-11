@@ -23,7 +23,6 @@ import timeit
 import pstats
 import argparse
 
-import shared
 
 ### Setup Argument Parser
 argparser = argparse.ArgumentParser(description='Run LasaurApp.', prog='lasaurapp')
@@ -36,8 +35,7 @@ argparser.add_argument('-t', '--timeit', dest='timeit', action='store_true',
 argparser.add_argument('-o', '--optimize', dest='optimize', action='store_true',
                     default=False, help='try loading optimize c modules')                                   
 args = argparser.parse_args()
-shared.args = args
-from filereaders import read_svg
+
 
 def main():
     print "running"

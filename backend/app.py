@@ -8,7 +8,6 @@ from serial_manager import SerialManager
 from flash import flash_upload, reset_atmega
 from build import build_firmware
 from filereaders import read_svg, read_dxf
-import shared
 
 
 APPNAME = "lasaurapp"
@@ -540,8 +539,6 @@ argparser.add_argument('-m', '--match', dest='match',
 argparser.add_argument('-o', '--optimize', dest='optimize', action='store_true',
                     default=False, help='try loading optimize c modules')                                        
 args = argparser.parse_args()
-# make accessible to other modules
-shared.args = args
 
 
 

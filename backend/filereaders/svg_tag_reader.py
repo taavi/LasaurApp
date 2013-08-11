@@ -6,25 +6,9 @@ import re
 import math
 import logging
 
-# conditionally load optimized C-modules
-import shared
-if shared.args.optimize:
-    try:
-        from .utilities_c import matrixMult, parseFloats
-    except ImportError:
-        from .utilities import matrixMult, parseFloats
-    try:
-        from .svg_attribute_reader_c import SVGAttributeReader
-    except ImportError:
-        from .svg_attribute_reader import SVGAttributeReader
-    try:
-        from .svg_path_reader_c import SVGPathReader
-    except ImportError:
-        from .svg_path_reader import SVGPathReader
-else:
-    from .utilities import matrixMult, parseFloats
-    from .svg_attribute_reader import SVGAttributeReader
-    from .svg_path_reader import SVGPathReader
+from .utilities import matrixMult, parseFloats
+from .svg_attribute_reader import SVGAttributeReader
+from .svg_path_reader import SVGPathReader
 
 
 log = logging.getLogger("svg_reader")

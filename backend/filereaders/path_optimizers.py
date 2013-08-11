@@ -18,15 +18,7 @@ __author__ = 'Stefan Hechenberger <stefan@nortd.com>'
 import math
 import logging
 
-# conditionally load optimized C-modules
-import shared
-if shared.args.optimize:
-    try:
-        import kdtree_c
-    except ImportError:
-        import kdtree
-else:
-    import kdtree
+import kdtree
 
 log = logging.getLogger("svg_reader")
 

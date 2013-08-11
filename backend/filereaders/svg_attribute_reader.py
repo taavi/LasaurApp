@@ -5,20 +5,8 @@ import re
 import math
 import logging
 
-# conditionally load optimized C-modules
-import shared
-if shared.args.optimize:
-    try:
-        from .webcolors_c import rgb_to_hex, normalize_hex, css3_names_to_hex
-    except ImportError:
-        from .webcolors import rgb_to_hex, normalize_hex, css3_names_to_hex
-    try:
-        from .utilities_c import matrixMult, parseFloats
-    except ImportError:
-        from .utilities import matrixMult, parseFloats
-else:
-    from .webcolors import rgb_to_hex, normalize_hex, css3_names_to_hex
-    from .utilities import matrixMult, parseFloats
+from .webcolors import rgb_to_hex, normalize_hex, css3_names_to_hex
+from .utilities import matrixMult, parseFloats
 
 log = logging.getLogger("svg_reader")
 
