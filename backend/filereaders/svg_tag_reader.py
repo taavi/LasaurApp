@@ -6,12 +6,6 @@ import math
 import logging
 
 from .utilities import matrixMult, parseFloats
-<<<<<<< HEAD
-from .svg_attribute_reader import SVGAttributeReader
-from .svg_path_reader import SVGPathReader
-=======
->>>>>>> parent of 1d676a1... working on conditional c-module import
-
 from .svg_attribute_reader import SVGAttributeReader
 from .svg_path_reader import SVGPathReader
 

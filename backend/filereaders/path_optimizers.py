@@ -18,14 +18,10 @@ __author__ = 'Stefan Hechenberger <stefan@nortd.com>'
 import math
 import logging
 
-<<<<<<< HEAD
 import kdtree
 
-=======
->>>>>>> parent of 1d676a1... working on conditional c-module import
 log = logging.getLogger("svg_reader")
 
-import kdtree
 
 
 def connect_segments(paths, epsilon2):

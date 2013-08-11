@@ -24,6 +24,10 @@ import pstats
 import argparse
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+from filereaders import read_svg
+>>>>>>> parent of 1d676a1... working on conditional c-module import
 =======
 from filereaders import read_svg
 >>>>>>> parent of 1d676a1... working on conditional c-module import

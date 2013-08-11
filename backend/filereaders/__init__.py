@@ -5,14 +5,6 @@ File Reader Module
 
 __author__ = 'Stefan Hechenberger <stefan@nortd.com>'
 
-<<<<<<< HEAD
-
-from .svg_reader import SVGReader
-from .dxf_reader import DXFReader
-from .path_optimizers import optimize_all
-
-=======
->>>>>>> parent of 1d676a1... working on conditional c-module import
 
 from .svg_reader import SVGReader
 from .dxf_reader import DXFReader
