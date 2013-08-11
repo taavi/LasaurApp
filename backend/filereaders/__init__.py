@@ -15,7 +15,7 @@ def read_svg(svg_string, target_size, tolerance, forced_dpi=None, optimize=True)
     else:
         from .svg_reader import SVGReader
         from .path_optimizers import optimize_all
-        
+
     svgReader = SVGReader(tolerance, target_size)
     parse_results = svgReader.parse(svg_string, forced_dpi)
     if optimize:

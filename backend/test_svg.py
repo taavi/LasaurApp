@@ -35,7 +35,9 @@ argparser.add_argument('-p', '--profile', dest='profile', action='store_true',
 argparser.add_argument('-t', '--timeit', dest='timeit', action='store_true',
                     default=False, help='run with timing')      
 argparser.add_argument('-o', '--optimize', dest='optimize', action='store_true',
-                    default=False, help='optimize by loading c extensions')                                  
+                    default=False, help='optimize by loading c extensions')   
+argparser.add_argument('-d', '--debug', dest='debug', action='store_true',
+                    default=False, help='verbose debug info')                                  
 args = argparser.parse_args()
 shared.args = args
 from filereaders import read_svg
@@ -44,7 +46,6 @@ thislocation = os.path.dirname(os.path.realpath(__file__))
 svgpath = os.path.join(thislocation, '..', 'other', 'test_svgs')
 
 def main():
-    print "running"
     svgstring = open(os.path.join(svgpath, "full-bed.svg")).read()
     # svgstring = open(os.path.join(svgpath, "rocket_full.svg")).read()
     # svgstring = open(os.path.join(svgpath, "Steven and Chris Picture Frame - with ERROR.svg")).read()

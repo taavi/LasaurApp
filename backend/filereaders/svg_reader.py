@@ -18,9 +18,13 @@ else:
 
 logging.basicConfig()
 log = logging.getLogger("svg_reader")
-# log.setLevel(logging.DEBUG)
-# log.setLevel(logging.INFO)
-log.setLevel(logging.WARN)
+if shared.args.debug:
+    # log.setLevel(logging.DEBUG)
+    log.setLevel(logging.INFO)
+    if shared.args.optimize:
+        log.info("running optimized")  
+else:
+    log.setLevel(logging.WARN)
 
 
 try:
@@ -125,7 +129,9 @@ class SVGReader:
         3. from hints of (known) originating apps
         4. from ratio of page and target size
         5. defaults to 90 DPI
-        """        
+        """
+        log.info("parse start")
+
         self.dpi = None
         self.boundarys = {}
 
@@ -243,6 +249,7 @@ class SVGReader:
         if self.lasertags:
             parse_results['lasertags'] = self.lasertags
 
+        log.info("parse end")
         return parse_results
 
 
