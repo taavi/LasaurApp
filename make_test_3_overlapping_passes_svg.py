@@ -47,14 +47,14 @@ class Quantizer(object):
                     for row in img
                 ]
             )
-        return slices
+        return reversed(slices)
 
     def lasertags(self):
         return [
-            "=pass{n}:1200mm/min:{n}%:{colour}=".format(n=(n + 1), colour=self.colour(n))
+            "=pass{n}:1200mm/min:{twotothen}%:{colour}=".format(
+                n=(n + 1), twotothen=2**n, colour=self.colour(n))
             for n in reversed(range(math.ceil(math.log(self.levels, 2))))
         ]
-
 
 
 def compress(img):
@@ -67,13 +67,16 @@ img = [[abs(x * y) for x in range(-20, 20)] for y in range(-20, 20)]
 img = normalize(img)
 quantizer = Quantizer(8)
 img = quantizer.quantize(img)
+img = quantizer.bitslice(img)
 
 paths = []
 
+for c, layer in enumerate(img):
 for y, row in enumerate(compress(img)):
     x = 0
     for px, length in row:
-        paths.append(PATH.format(x=x, y=y, dx=length, dy=0, colour=quantizer.colour(px)))
+        if px != quantizer.levels - 1:
+            paths.append(PATH.format(x=x, y=y, dx=length, dy=0, colour=quantizer.colour(px)))
         x += length
 
 print TEMPLATE.format(paths='\n'.join(paths), lasertags=quantizer.lasertags())
